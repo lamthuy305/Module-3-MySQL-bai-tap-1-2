@@ -1,0 +1,199 @@
+create database student_management;
+use student_management;
+
+create table students
+(
+    ID     int primary key auto_increment,
+    Name   varchar(50)   not null,
+    Adress varchar(50)   not null,
+    Sex    bit default 1 not null,
+    Age    int           not null check (Age between 18 and 25),
+    Email  varchar(50)   not null unique,
+    Phone  varchar(10)   not null unique
+);
+
+create table classes
+(
+    ID   int primary key auto_increment,
+    Name varchar(50)
+);
+
+alter table students
+    add classId int;
+
+alter table students
+    add foreign key (classId) references classes (ID);
+
+insert into classes(Name)
+values ('C0122G1');
+insert into classes(Name)
+values ('C0222G1');
+insert into classes(Name)
+values ('C0322G1');
+insert into classes(Name)
+values ('C0422G1');
+insert into classes(Name)
+values ('C0522G1');
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Thủy', 'Hà Nội', 1, 20, 'lamthuy305@gmail.com', 0368990882, 1);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Hoa', 'Sài Gòn', 0, 21, 'aad@gmail.com', 8565, 2);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Minh', 'Hà Nội', 1, 21, 'bsd@gmail.com', 885, 3);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Thảo', 'Nam Định', 0, 23, 'nds@gmail.com', 532, 4);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Thắng', 'Hà Nội', 1, 21, 'fdag@gmail.com', 7534, 5);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Ngát', 'Nam Định', 0, 18, 'daa2fcd@gmail.com', 4235, 1);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Nhật', 'Hà Nội', 0, 19, 'rdgsda@gmail.com', 01124, 5);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Khánh', 'Ninh Bình', 1, 20, 'sdadsa@gmail.com', 8385, 4);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Phương', 'Hà Nội', 1, 25, 'kffgf@gmail.com', 98412, 2);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Nam', 'Thái Bình', 1, 25, 'gggggsas@gmail.com', 7874, 1);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Tình', 'Thái Bình', 1, 18, 'ggggsdgsas@gmail.com', 788274, 1);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Bình', 'Thái Bình', 0, 19, 'gggfagsdgsas@gmail.com', 784438274, 1);
+insert into students(Name, Adress, Sex, Age, Email, Phone, classId)
+values ('Khánh', 'Thái Nguyên', 1, 23, 'ggggagấdgsdgsas@gmail.com', 787438274, 1);
+
+
+select *
+from students;
+
+select *
+from students
+where Sex = 1;
+
+select *
+from students
+where Age < 20;
+
+select *
+from students
+where Adress = 'Hà Nội';
+select *
+from students
+where Adress in ('Hà Nội', 'Nam Định', 'Thái Bình');
+
+select *
+from students
+where Adress = 'Hà Nội'
+   OR Adress = 'Nam Định'
+   OR Adress = 'Ninh Bình';
+
+
+select *
+from students
+where Adress != 'Hà Nội';
+
+select *
+from students
+where Name like 'T%';
+
+select *
+from students
+where Name = 'Thủy';
+
+select *
+from students
+where Name like 'Th%';
+
+select Name
+from students;
+
+select *
+from students
+order by Name DESC;
+
+select *
+from students
+order by Age;
+
+select s.classId, c.Name, count(s.classId) as `Số sinh viên`
+from students s
+         join classes c on s.classId = c.ID
+group by s.classid;
+
+
+select s.classId, c.Name, count(s.classId)
+from students s
+         join classes c on s.classId = c.ID
+group by s.classid
+having count(classId) >= all (select count(classId) from students group by students.classId);
+
+
+select s.classId, c.Name, count(s.classId) # tìm lớp có số sv max/min
+from students s
+         join classes c on s.classId = c.ID
+group by s.classid
+having count(classId) <= all (select count(classId) from students group by students.classId);
+
+
+select s.classId, c.Name, count(s.classId) # tìm lớp có số sv >=2
+from students s
+         join classes c on s.classId = c.ID
+group by s.classid
+having count(classId) >= 2;
+
+select Adress, count(Adress) # gom nhóm địa chỉ
+from students
+group by Adress;
+
+select Adress, count(Adress) # gom nhóm địa chỉ lớn hơn 3
+from students
+group by Adress
+having count(Adress) >= 2;
+
+select Name, Age
+from students
+where Age = (select max(Age) from students);
+
+
+select Name, Age # Hiện min/max tuổi dùng 2 select (1 cái tìm min/max, 1 cái dùng where so sánh với min/max để hiển thị)
+from students
+where Age = (select min(Age) from students);
+
+
+
+delete
+from students
+where Adress = 'Thái Bình'; # xóa ai quê Thái Bình
+
+select *
+from students
+where Adress = 'Thái Bình';
+
+update students
+SET Sex = 0
+where Adress = 'Thái Bình';
+
+SELECT *
+FROM students
+ORDER BY Age
+LIMIT 1 OFFSET 1;
+
+SELECT MAX(Age) #Tuổi lớn thứ 2
+FROM students
+WHERE Age < (SELECT MAX(Age) FROM students);
+
+SELECT MIN(Age) # tuổi nhỏ thứ 2
+FROM students
+WHERE Age > (SELECT MIN(Age) FROM students);
+
+select Name, Age # hiển thị những người có tuổi lớn thứ 2
+from students
+where Age = (SELECT MAX(Age)
+             FROM students
+             WHERE Age < (SELECT MAX(Age) FROM students));
+
+
+select Name, Age # hiển thị những người có tuổi nhỏ thứ 2
+from students
+where Age = (SELECT MIN(Age)
+             FROM students
+             WHERE Age > (SELECT MIN(Age) FROM students));
